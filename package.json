@@ -1,8 +1,8 @@
 {
   "name": "mbnsfr-ai-coding-assistant",
   "displayName": "mbnsfr AI Coding Assistant",
-  "description": "Private BYOK coding workflow launcher with optional mbnsfr repository safety instructions.",
-  "version": "0.1.0",
+  "description": "Private multi-provider VS Code coding hub for existing Claude, Codex, Gemini Antigravity, and GitHub Copilot accounts; optional BYOK; safe agent handoffs.",
+  "version": "0.2.0",
   "publisher": "mbnsfr",
   "license": "UNLICENSED",
   "private": true,
@@ -12,26 +12,51 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [
-    "onCommand:mbAI.start",
-    "onCommand:mbAI.installGuardrails",
-    "onCommand:mbAI.configure",
-    "onCommand:mbAI.showGuide"
+  "keywords": [
+    "claude",
+    "codex",
+    "antigravity",
+    "gemini",
+    "copilot",
+    "coding agents"
   ],
   "main": "./extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "contributes": {
     "commands": [
       {
         "command": "mbAI.start",
-        "title": "mbnsfr AI: Start Coding"
+        "title": "mbnsfr AI: Open Multi-Agent Hub"
       },
       {
         "command": "mbAI.configure",
-        "title": "mbnsfr AI: Configure BYOK Models"
+        "title": "mbnsfr AI: Connect Accounts and BYOK Models"
+      },
+      {
+        "command": "mbAI.openClaude",
+        "title": "mbnsfr AI: Open Claude Code"
+      },
+      {
+        "command": "mbAI.openCodex",
+        "title": "mbnsfr AI: Open OpenAI Codex"
+      },
+      {
+        "command": "mbAI.openGemini",
+        "title": "mbnsfr AI: Open Google Antigravity (Gemini)"
+      },
+      {
+        "command": "mbAI.openCopilot",
+        "title": "mbnsfr AI: Open GitHub Copilot"
       },
       {
         "command": "mbAI.installGuardrails",
-        "title": "mbnsfr AI: Install Workspace Guardrails"
+        "title": "mbnsfr AI: Add Multi-Agent Repository Safety Instructions"
+      },
+      {
+        "command": "mbAI.copyHandoff",
+        "title": "mbnsfr AI: Copy Task Handoff to Another Agent"
       },
       {
         "command": "mbAI.showGuide",
@@ -47,12 +72,31 @@
           "command": "mbAI.configure"
         },
         {
+          "command": "mbAI.openClaude"
+        },
+        {
+          "command": "mbAI.openCodex"
+        },
+        {
+          "command": "mbAI.openGemini"
+        },
+        {
+          "command": "mbAI.openCopilot"
+        },
+        {
           "command": "mbAI.installGuardrails"
+        },
+        {
+          "command": "mbAI.copyHandoff"
         },
         {
           "command": "mbAI.showGuide"
         }
       ]
     }
+  },
+  "scripts": {
+    "test": "node tests/test-extension.js",
+    "check": "node --check extension.js"
   }
 }
