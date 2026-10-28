@@ -1,0 +1,58 @@
+{
+  "name": "mbnsfr-ai-coding-assistant",
+  "displayName": "mbnsfr AI Coding Assistant",
+  "description": "Private BYOK coding workflow launcher with optional mbnsfr repository safety instructions.",
+  "version": "0.1.0",
+  "publisher": "mbnsfr",
+  "license": "UNLICENSED",
+  "private": true,
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:mbAI.start",
+    "onCommand:mbAI.installGuardrails",
+    "onCommand:mbAI.configure",
+    "onCommand:mbAI.showGuide"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "mbAI.start",
+        "title": "mbnsfr AI: Start Coding"
+      },
+      {
+        "command": "mbAI.configure",
+        "title": "mbnsfr AI: Configure BYOK Models"
+      },
+      {
+        "command": "mbAI.installGuardrails",
+        "title": "mbnsfr AI: Install Workspace Guardrails"
+      },
+      {
+        "command": "mbAI.showGuide",
+        "title": "mbnsfr AI: Open Setup Guide"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "mbAI.start"
+        },
+        {
+          "command": "mbAI.configure"
+        },
+        {
+          "command": "mbAI.installGuardrails"
+        },
+        {
+          "command": "mbAI.showGuide"
+        }
+      ]
+    }
+  }
+}
