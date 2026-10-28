@@ -1,8 +1,8 @@
 {
   "name": "mbnsfr-ai-coding-assistant",
   "displayName": "mbnsfr AI Coding Assistant",
-  "description": "Private multi-provider VS Code coding hub for existing Claude, Codex, Gemini Antigravity, and GitHub Copilot accounts; optional BYOK; safe agent handoffs.",
-  "version": "0.2.0",
+  "description": "Private VS Code multi-agent coordinator: Claude Code, OpenAI Codex, Antigravity, Microsoft Copilot browser handoff, free API/local model routing, downgrade detection, isolated worktrees.",
+  "version": "0.3.0",
   "publisher": "mbnsfr",
   "license": "UNLICENSED",
   "private": true,
@@ -13,12 +13,15 @@
     "Other"
   ],
   "keywords": [
-    "claude",
     "codex",
-    "antigravity",
+    "claude code",
     "gemini",
-    "copilot",
-    "coding agents"
+    "antigravity",
+    "microsoft copilot",
+    "groq",
+    "openrouter",
+    "ollama",
+    "multi agent"
   ],
   "main": "./extension.js",
   "activationEvents": [
@@ -28,11 +31,35 @@
     "commands": [
       {
         "command": "mbAI.start",
-        "title": "mbnsfr AI: Open Multi-Agent Hub"
+        "title": "mbnsfr AI: Open Multi-Agent Coordinator"
       },
       {
         "command": "mbAI.configure",
-        "title": "mbnsfr AI: Connect Accounts and BYOK Models"
+        "title": "mbnsfr AI: Connect Accounts / APIs"
+      },
+      {
+        "command": "mbAI.configureAPI",
+        "title": "mbnsfr AI: Configure API or Local Models"
+      },
+      {
+        "command": "mbAI.pinModel",
+        "title": "mbnsfr AI: Pin a Subscription CLI Model"
+      },
+      {
+        "command": "mbAI.runPlan",
+        "title": "mbnsfr AI: Run Optimized Read-Only Plan + Review"
+      },
+      {
+        "command": "mbAI.runImplement",
+        "title": "mbnsfr AI: Implement in a Safe Separate Git Worktree"
+      },
+      {
+        "command": "mbAI.openCopilot",
+        "title": "mbnsfr AI: Open Microsoft Copilot (Personal)"
+      },
+      {
+        "command": "mbAI.openGitHubCopilot",
+        "title": "mbnsfr AI: Open GitHub Copilot (Separate)"
       },
       {
         "command": "mbAI.openClaude",
@@ -44,59 +71,92 @@
       },
       {
         "command": "mbAI.openGemini",
-        "title": "mbnsfr AI: Open Google Antigravity (Gemini)"
-      },
-      {
-        "command": "mbAI.openCopilot",
-        "title": "mbnsfr AI: Open GitHub Copilot"
-      },
-      {
-        "command": "mbAI.installGuardrails",
-        "title": "mbnsfr AI: Add Multi-Agent Repository Safety Instructions"
+        "title": "mbnsfr AI: Open Google Antigravity"
       },
       {
         "command": "mbAI.copyHandoff",
-        "title": "mbnsfr AI: Copy Task Handoff to Another Agent"
+        "title": "mbnsfr AI: Copy Handoff for Microsoft Copilot"
+      },
+      {
+        "command": "mbAI.installGuardrails",
+        "title": "mbnsfr AI: Add Repository Agent Instructions"
       },
       {
         "command": "mbAI.showGuide",
-        "title": "mbnsfr AI: Open Setup Guide"
+        "title": "mbnsfr AI: Setup Guide"
       }
     ],
-    "menus": {
-      "commandPalette": [
-        {
-          "command": "mbAI.start"
+    "configuration": {
+      "title": "mbnsfr AI Coordinator",
+      "properties": {
+        "mbAI.routes.plan": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "groq-oss",
+            "groq-qwen",
+            "openrouter-free",
+            "ollama",
+            "lmstudio",
+            "claude",
+            "codex",
+            "antigravity"
+          ],
+          "description": "Sequential routing order for read-only planning tasks."
         },
-        {
-          "command": "mbAI.configure"
+        "mbAI.routes.implement": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "codex",
+            "claude",
+            "antigravity"
+          ],
+          "description": "Implementation agents. Only supported subscription CLIs may modify code; a fresh Git worktree is mandatory."
         },
-        {
-          "command": "mbAI.openClaude"
+        "mbAI.routes.review": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "groq-qwen",
+            "groq-oss",
+            "openrouter-free",
+            "ollama",
+            "lmstudio",
+            "claude",
+            "antigravity",
+            "codex"
+          ],
+          "description": "Sequential routing order for independent read-only review."
         },
-        {
-          "command": "mbAI.openCodex"
+        "mbAI.maxAttempts": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12,
+          "default": 4,
+          "description": "Maximum distinct providers tried per stage."
         },
-        {
-          "command": "mbAI.openGemini"
+        "mbAI.allowPaidOrUnverifiedApis": {
+          "type": "boolean",
+          "default": false,
+          "description": "EXPLICIT OPT-IN: permits paid/unverified API calls (Gemini 3.8 Flash, Cloudflare, NVIDIA, Cerebras, DeepSeek, custom). These can incur usage charges; free tier is account/model specific."
         },
-        {
-          "command": "mbAI.openCopilot"
-        },
-        {
-          "command": "mbAI.installGuardrails"
-        },
-        {
-          "command": "mbAI.copyHandoff"
-        },
-        {
-          "command": "mbAI.showGuide"
+        "mbAI.requireModelEvidence": {
+          "type": "boolean",
+          "default": false,
+          "description": "If enabled, fail over when a pinned model has no machine-readable confirmation of actual model identity. May block providers that do not report model IDs."
         }
-      ]
+      }
     }
   },
   "scripts": {
-    "test": "node tests/test-extension.js",
-    "check": "node --check extension.js"
+    "test": "node --test tests/*.test.js",
+    "check": "node --check extension.js && node --check lib/core.js && node --check lib/adapters.js"
   }
 }
